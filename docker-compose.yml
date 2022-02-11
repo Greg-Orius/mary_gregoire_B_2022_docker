@@ -1,39 +1,39 @@
-version: "3.8"
+version: "3.8" # Sélection de la version de Docker Engine
 
-services:
-  mongo:
-    image: mongo:latest
+services: # Configuration des services. Chaque service correspondra à un container du cluster
+  mongo: # Service de base de donnée
+    image: mongo:latest # Sélection de l'image par défaut depuis le registry officiel
     volumes:
-      - mongo_data:/var/lib/mongodb
+      - mongo_data:/var/lib/mongodb # Création du volume persistant qui contiendra la base de donnée
     expose:
-      - 27017
+      - 27017 # Exposition du port qui sera en écoute et en envois des données
     ports:
-      - 27017:27017  
-    networks:
+      - 27017:27017  # Mappage d'un port de l'hôte Docker avec un port du container
+    networks: # Association du service avec des réseaux
       - back-tier
-  node:
-    depends_on:
+  nodejs: # Service web
+    depends_on: # Dépendance de service
       - mongo
-    build: ./backend
+    build: ./backend # Build de l'image à partir d'un Dockerfile
     ports:
-      - 8080:8080
-    environment:
+      - 8080:8080 # Mappage d'un port de l'hôte Docker avec un port du container
+    environment: # Initialisation des variables d'environemment dans le conteneur
       PORT: 8080
-    networks:
+    networks: # Association du service avec des réseaux
       - front-tier
       - back-tier
-  react:
-    build: ./frontend
+  react: # Service applicatif
+    build: ./frontend # Build de l'image à partir d'un Dockerfile
     ports:
-      - 3000:3000
-    environment:
+      - 3000:3000 # Mappage d'un port de l'hôte Docker avec un port du container
+    environment: # Initialisation des variables d'environemment dans le conteneur
       PORT: 3000
-    networks:
+    networks: # Compartimention du service dans des réseaux
       - front-tier
       
-volumes:
+volumes: # Définition des volumes
   mongo_data: {}
   
-networks:
+networks: # Définition des réseaux
   front-tier:
   back-tier:
